@@ -23,44 +23,26 @@ import org.w3c.dom.Text;
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
-
+    //inisialisasi variable
     String clientId;
     MqttAndroidClient client;
     TextView status_pintu;
     String pintu = "tutup";
     String Lpintu = "tutup";
     ImageView buka_pintu,tutup_pintu;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buka_pintu = (ImageView) findViewById(R.id.buka_pintu);
-        //tutup_pintu = (ImageView) findViewById(R.id.tutup_pintu);
-        status_pintu =(TextView) findViewById(R.id.txt_pagar_stt);
-//        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-//        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimary);
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-////                        cek();
-////                        cek();
-////                        cek();
-//                        finish();
-//                        startActivity(getIntent());
-//                        swipeRefreshLayout.setRefreshing(false);
-//
-//                    }
-//                }, 2000);
-//            }
-//        });
+        buka_pintu = (ImageView) findViewById(R.id.buka_pintu); //inisialisasi button bukapintu
+        status_pintu =(TextView) findViewById(R.id.txt_pagar_stt); //inisialisasi status pintu
 
+        //pemanggilan function
         sambung();
 
+
+        //untuk perintah button
         buka_pintu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,21 +50,20 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (pintu.equals("buka")) {
                         payload = "tutup";
-                        buka_pintu.setImageResource(R.drawable.bukabaru);
-
-                        //Toast.makeText(this, "Status : " + payload, Toast.LENGTH_LONG).show();
+                        buka_pintu.setImageResource(R.drawable.bukabaru); //merubah gambar button
                     }
                     if (pintu.equals("tutup")) {
-                        buka_pintu.setImageResource(R.drawable.bukatutup);
+                        buka_pintu.setImageResource(R.drawable.bukatutup); //merubah gambar button
                         payload = "buka";
                     }
 
                 }catch (Exception e){
-                    Toast.makeText(MainActivity.this, "Error : " + e.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Error : " + e.toString(), Toast.LENGTH_LONG).show(); //pemberitahuan error
                 }
-                String topic = "Lpintu";
+                String topic = "pintu";
                 byte[] encodedPayload = new byte[0];
                 try {
+                    //untuk publis ke mqtt
                     encodedPayload = payload.getBytes("UTF-8");
                     MqttMessage message = new MqttMessage(encodedPayload);
                     client.publish(topic, message);
@@ -91,42 +72,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        tutup_pintu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String payload = "the payload Teras";
-//                //Toast.makeText(MainActivity.this, "Status : " + payload, Toast.LENGTH_LONG).show();
-//                try {
-//                    if (SL1T.equals("hidup")) {
-//                        payload = "off";
-//                        buka_pintu.setImageResource(R.drawable.lamp_luar_off);
-//                        //Toast.makeText(this, "Status : " + payload, Toast.LENGTH_LONG).show();
-//                        //Toast.makeText(MainActivity.this, "Status : " + payload, Toast.LENGTH_LONG).show();
-//                    }
-//                    if (SL1T.equals("mati")) {
-//                        buka_pintu.setImageResource(R.drawable.lamp_luar_on);
-//                        payload = "on";
-//                        //Toast.makeText(MainActivity.this, "Status : " + payload, Toast.LENGTH_LONG).show();
-////                Toast.makeText(this, "Status : " + payload, Toast.LENGTH_LONG).show();
-//                    }
-//
-//                }catch (Exception e){
-//                    Toast.makeText(MainActivity.this, "Error : " + e.toString(), Toast.LENGTH_LONG).show();
-//                }
-//                String topic = "L1T";
-//                byte[] encodedPayload = new byte[0];
-//                try {
-//                    encodedPayload = payload.getBytes("UTF-8");
-//                    MqttMessage message = new MqttMessage(encodedPayload);
-//                    client.publish(topic, message);
-//                } catch (UnsupportedEncodingException | MqttException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-
     }
+
+    //function untuk mengambil data dari server
     public  void sambung(){
         //"tcp://192.168.43.39:1883"
         clientId = MqttClient.generateClientId();
@@ -134,16 +82,13 @@ public class MainActivity extends AppCompatActivity {
                 new MqttAndroidClient(this.getApplicationContext(), "tcp://test.mosquitto.org:1883",
                         clientId);
         try {
+            //ke koneksi ke server atau tidak
             MqttConnectOptions options = new MqttConnectOptions();
             options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
-//            options.setUserName("fujimiya");
-//            options.setPassword("123".toCharArray());
             IMqttToken token = client.connect(options);
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    // We are connected
-                    //Log.d(TAG, "onSuccess");
                     Toast.makeText(MainActivity.this,"Terhubung",Toast.LENGTH_SHORT).show();
                     cek();
                     cek();
@@ -170,28 +115,26 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     try {
-                        client.subscribe("status_ pintu",qos);
-
+                        client.subscribe("status_pintu",qos);
                         client.setCallback(new MqttCallback() {
                             @Override
                             public void connectionLost(Throwable cause) {
 
                             }
-
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
                                 //Toast.makeText(MainActivity.this,"topic : "+topic+" message : "+message.toString(),Toast.LENGTH_SHORT).show();
                                 //setMessageNotification(topic,message.toString());
 
-                                if(topic.equals("status_ pintu")){
+                                if(topic.equals("status_pintu")){
                                     pintu = ""+message;
                                     if(pintu.equals("buka")){
-                                        buka_pintu.setImageResource(R.drawable.bukabaru);
-                                        status_pintu.setText("Pagar Terbuka");
+                                        buka_pintu.setImageResource(R.drawable.bukabaru); //mengganti gambar button
+                                        status_pintu.setText("Pagar Terbuka"); //mengganti text
                                     }
                                     if(pintu.equals("tutup")){
-                                        buka_pintu.setImageResource(R.drawable.bukatutup);
-                                        status_pintu.setText("Pagar Tertutup");
+                                        buka_pintu.setImageResource(R.drawable.bukatutup); //mengganti gambar button
+                                        status_pintu.setText("Pagar Tertutup"); //mengganti text
                                     }
                                 }
                             }

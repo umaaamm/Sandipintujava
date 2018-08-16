@@ -20,26 +20,34 @@ import com.firebase.client.ValueEventListener;
  */
 
 public class Login extends AppCompatActivity {
-    Firebase bacadata;
+    //inisialisasi variable
+    Firebase bacadata; //variable untuk firebase
     String user,pass;
     EditText username,password;
     Button loginp;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loginactivity);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
-        Firebase.setAndroidContext(this);
-        username = (EditText) findViewById(R.id.user);
-        password =(EditText) findViewById(R.id.pass);
-        loginp = (Button) findViewById(R.id.plogin);
+        actionBar.hide(); //menghilangkan actionbar
+
+        Firebase.setAndroidContext(this); //setup firebase
+
+        username = (EditText) findViewById(R.id.user); //inisialisasi username
+        password =(EditText) findViewById(R.id.pass); //inisialisasi password
+        loginp = (Button) findViewById(R.id.plogin); //inisialisasi lagin
+
+        //koneksi ke server firebase
         bacadata = new Firebase("https://sandypager-a24ba.firebaseio.com/Login");
+
+        //mengambil data dari firebase
         bacadata.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.child("username").getValue().toString();
-                pass = dataSnapshot.child("password").getValue().toString();
+                user = dataSnapshot.child("username").getValue().toString(); //data username
+                pass = dataSnapshot.child("password").getValue().toString(); //data password
                 //Toast.makeText(Login.this, "user"+u+" , pass "+p, Toast.LENGTH_SHORT).show();
             }
 
@@ -49,6 +57,7 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        //untuk button login
         loginp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,12 +65,12 @@ public class Login extends AppCompatActivity {
                 u = username.getText().toString();
                 p = password.getText().toString();
 
+                //cek kondisi benar udah sesuai dengan yang ada di server atau tidak
                 if (u.equals(user) && p.equals(pass)){
                     Toast.makeText(Login.this, "Selamat Anda Berhasil Login", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(Login.this,MainActivity.class);
                     startActivity(i);
                     //Toast.makeText(Login.this, "user"+user+" , pass "+pass, Toast.LENGTH_SHORT).show();
-                    // Snackbar.make(, "Hidupin Aku", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }else{
                     Toast.makeText(Login.this, "gagal", Toast.LENGTH_SHORT).show();
                 }

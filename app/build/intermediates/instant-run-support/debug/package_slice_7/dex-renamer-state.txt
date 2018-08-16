@@ -1,4 +1,4 @@
-#Tue Aug 14 20:29:58 WIB 2018
-base.0=/Users/mac/Documents/skripis umitra/Sandipintujava/app/build/intermediates/transforms/dexMerger/debug/8
+#Thu Aug 16 18:54:43 WIB 2018
+base.0=/Users/mac/Documents/skripis umitra/Sandipintujava/app/build/intermediates/transforms/dexMerger/debug/27
 path.0=classes.dex
 renamed.0=classes.dex
