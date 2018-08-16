@@ -30,13 +30,36 @@ public class MainActivity extends AppCompatActivity {
     String pintu = "tutup";
     String Lpintu = "tutup";
     ImageView buka_pintu,tutup_pintu;
-
+    SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         buka_pintu = (ImageView) findViewById(R.id.buka_pintu); //inisialisasi button bukapintu
         status_pintu =(TextView) findViewById(R.id.txt_pagar_stt); //inisialisasi status pintu
+
+        //refresh
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+//                        cek();
+//                        cek();
+//                        cek();
+                        finish();
+                        startActivity(getIntent());
+                        swipeRefreshLayout.setRefreshing(false);
+
+                    }
+                }, 2000);
+            }
+        });
+
+
 
         //pemanggilan function
         sambung();
